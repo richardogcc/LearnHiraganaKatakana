@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="icons8-japan-16.png" type="image/x-icon">
+    <title>Hiragana & Katakana</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            transition: background-color 0.5s ease;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        .mode-select {
+            margin-bottom: 2rem;
+        }
+
+        button {
+            padding: 15px 30px;
+            margin: 10px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: transform 0.2s;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+        }
+
+        .character-display {
+            font-size: 8rem;
+            margin: 2rem 0;
+            min-height: 120px;
+        }
+
+        .input-field {
+            padding: 15px;
+            font-size: 1.5rem;
+            width: 200px;
+            text-align: center;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        .character-display.correct {
+            color: #4CAF50 !important;
+        }
+
+        .game-screen {
+            display: none;
+        }
+
+        .stats {
+            font-size: 1.2rem;
+            color: #666;
+        }
+
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background-color: #333;
+            color: #fff;
+        }
+
+        body.dark-mode .stats {
+            color: #ccc;
+        }
+
+        body.dark-mode .input-field {
+            background-color: #444;
+            color: #fff;
+            border-color: #555;
+        }
+
+        body.dark-mode .input-field:focus {
+            border-color: #777;
+        }
+
+        body.dark-mode .character-display.correct {
+            color: #98ee98 !important;
+            /* Eliminar background-color */
+        }
+
+        /* Dark Mode Toggle Button */
+        .dark-mode-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 24px;
+            color: #555;
+        }
+
+        body.dark-mode .dark-mode-toggle {
+            color: #ffc107;
+        }
+    </style>
+</head>
+
+<body>
+    <button class="dark-mode-toggle">☀️</button>
+    <div class="container">
+        <div class="mode-select">
+            <h2>Hiragana</h2>
+            <button onclick="startGame('hiragana')">あ - a</button>
+            <button onclick="startGame('romaji')">a - あ</button>
+            <button onclick="startGame('hiragana-extended')">だ - da</button>
+            <button onclick="startGame('romaji-hiragana-extended')">da - だ</button>
+
+            <h2>Katakana</h2>
+            <button onclick="startGame('katakana')">ア - a</button>
+            <button onclick="startGame('romaji-katakana')">a - ア</button>
+            <button onclick="startGame('katakana-extended')">ダ - da</button>
+            <button onclick="startGame('romaji-katakana-extended')">da - ダ</button>
+        </div>
+
+        <div class="game-screen">
+            <div class="character-display"></div>
+            <input type="text" class="input-field" autofocus>
+            <div class="stats">
+                <span id="remaining">0</span> left
+            </div>
+            <button style="margin-top: 4rem;" onclick="returnToMenu()">Menu</button>
+        </div>
+    </div>
+
+    <script>
+        const hiraganaData = [
+            { hiragana: 'あ', romaji: 'a' },
+            { hiragana: 'い', romaji: 'i' },
+            { hiragana: 'う', romaji: 'u' },
+            { hiragana: 'え', romaji: 'e' },
+            { hiragana: 'お', romaji: 'o' },
+            { hiragana: 'か', romaji: 'ka' },
+            { hiragana: 'き', romaji: 'ki' },
+            { hiragana: 'く', romaji: 'ku' },
+            { hiragana: 'け', romaji: 'ke' },
+            { hiragana: 'こ', romaji: 'ko' },
+            { hiragana: 'さ', romaji: 'sa' },
+            { hiragana: 'し', romaji: 'shi' },
+            { hiragana: 'す', romaji: 'su' },
+            { hiragana: 'せ', romaji: 'se' },
+            { hiragana: 'そ', romaji: 'so' },
+            { hiragana: 'た', romaji: 'ta' },
+            { hiragana: 'ち', romaji: 'chi' },
+            { hiragana: 'つ', romaji: 'tsu' },
+            { hiragana: 'て', romaji: 'te' },
+            { hiragana: 'と', romaji: 'to' },
+            { hiragana: 'な', romaji: 'na' },
+            { hiragana: 'に', romaji: 'ni' },
+            { hiragana: 'ぬ', romaji: 'nu' },
+            { hiragana: 'ね', romaji: 'ne' },
+            { hiragana: 'の', romaji: 'no' },
+            { hiragana: 'は', romaji: 'ha' },
+            { hiragana: 'ひ', romaji: 'hi' },
+            { hiragana: 'ふ', romaji: 'fu' },
+            { hiragana: 'へ', romaji: 'he' },
+            { hiragana: 'ほ', romaji: 'ho' },
+            { hiragana: 'ま', romaji: 'ma' },
+            { hiragana: 'み', romaji: 'mi' },
+            { hiragana: 'む', romaji: 'mu' },
+            { hiragana: 'め', romaji: 'me' },
+            { hiragana: 'も', romaji: 'mo' },
+            { hiragana: 'や', romaji: 'ya' },
+            { hiragana: 'ゆ', romaji: 'yu' },
+            { hiragana: 'よ', romaji: 'yo' },
+            { hiragana: 'ら', romaji: 'ra' },
+            { hiragana: 'り', romaji: 'ri' },
+            { hiragana: 'る', romaji: 'ru' },
+            { hiragana: 'れ', romaji: 're' },
+            { hiragana: 'ろ', romaji: 'ro' },
+            { hiragana: 'わ', romaji: 'wa' },
+            { hiragana: 'を', romaji: 'wo' },
+            { hiragana: 'ん', romaji: 'n' },
+        ];
+
+        const hiraganaDataExtended = [
+            { hiragana: 'が', romaji: 'ga' },
+            { hiragana: 'ぎ', romaji: 'gi' },
+            { hiragana: 'ぐ', romaji: 'gu' },
+            { hiragana: 'げ', romaji: 'ge' },
+            { hiragana: 'ご', romaji: 'go' },
+            { hiragana: 'ざ', romaji: 'za' },
+            { hiragana: 'じ', romaji: 'ji' },
+            { hiragana: 'ず', romaji: 'zu' },
+            { hiragana: 'ぜ', romaji: 'ze' },
+            { hiragana: 'ぞ', romaji: 'zo' },
+            { hiragana: 'だ', romaji: 'da' },
+            { hiragana: 'ぢ', romaji: 'ji' },
+            { hiragana: 'づ', romaji: 'zu' },
+            { hiragana: 'で', romaji: 'de' },
+            { hiragana: 'ど', romaji: 'do' },
+            { hiragana: 'ば', romaji: 'ba' },
+            { hiragana: 'び', romaji: 'bi' },
+            { hiragana: 'ぶ', romaji: 'bu' },
+            { hiragana: 'べ', romaji: 'be' },
+            { hiragana: 'ぼ', romaji: 'bo' },
+            { hiragana: 'ぱ', romaji: 'pa' },
+            { hiragana: 'ぴ', romaji: 'pi' },
+            { hiragana: 'ぷ', romaji: 'pu' },
+            { hiragana: 'ぺ', romaji: 'pe' },
+            { hiragana: 'ぽ', romaji: 'po' },
+        ];
+
+        const katakanaData = [
+            { katakana: 'ア', romaji: 'a' },
+            { katakana: 'イ', romaji: 'i' },
+            { katakana: 'ウ', romaji: 'u' },
+            { katakana: 'エ', romaji: 'e' },
+            { katakana: 'オ', romaji: 'o' },
+            { katakana: 'カ', romaji: 'ka' },
+            { katakana: 'キ', romaji: 'ki' },
+            { katakana: 'ク', romaji: 'ku' },
+            { katakana: 'ケ', romaji: 'ke' },
+            { katakana: 'コ', romaji: 'ko' },
+            { katakana: 'サ', romaji: 'sa' },
+            { katakana: 'シ', romaji: 'shi' },
+            { katakana: 'ス', romaji: 'su' },
+            { katakana: 'セ', romaji: 'se' },
+            { katakana: 'ソ', romaji: 'so' },
+            { katakana: 'タ', romaji: 'ta' },
+            { katakana: 'チ', romaji: 'chi' },
+            { katakana: 'ツ', romaji: 'tsu' },
+            { katakana: 'テ', romaji: 'te' },
+            { katakana: 'ト', romaji: 'to' },
+            { katakana: 'ナ', romaji: 'na' },
+            { katakana: 'ニ', romaji: 'ni' },
+            { katakana: 'ヌ', romaji: 'nu' },
+            { katakana: 'ネ', romaji: 'ne' },
+            { katakana: 'ノ', romaji: 'no' },
+            { katakana: 'ハ', romaji: 'ha' },
+            { katakana: 'ヒ', romaji: 'hi' },
+            { katakana: 'フ', romaji: 'fu' },
+            { katakana: 'ヘ', romaji: 'he' },
+            { katakana: 'ホ', romaji: 'ho' },
+            { katakana: 'マ', romaji: 'ma' },
+            { katakana: 'ミ', romaji: 'mi' },
+            { katakana: 'ム', romaji: 'mu' },
+            { katakana: 'メ', romaji: 'me' },
+            { katakana: 'モ', romaji: 'mo' },
+            { katakana: 'ヤ', romaji: 'ya' },
+            { katakana: 'ユ', romaji: 'yu' },
+            { katakana: 'ヨ', romaji: 'yo' },
+            { katakana: 'ラ', romaji: 'ra' },
+            { katakana: 'リ', romaji: 'ri' },
+            { katakana: 'ル', romaji: 'ru' },
+            { katakana: 'レ', romaji: 're' },
+            { katakana: 'ロ', romaji: 'ro' },
+            { katakana: 'ワ', romaji: 'wa' },
+            { katakana: 'ヲ', romaji: 'wo' },
+            { katakana: 'ン', romaji: 'n' },
+        ];
+
+        const katakanaDataExtended = [
+            { katakana: 'ガ', romaji: 'ga' },
+            { katakana: 'ギ', romaji: 'gi' },
+            { katakana: 'グ', romaji: 'gu' },
+            { katakana: 'ゲ', romaji: 'ge' },
+            { katakana: 'ゴ', romaji: 'go' },
+            { katakana: 'ザ', romaji: 'za' },
+            { katakana: 'ジ', romaji: 'ji' },
+            { katakana: 'ズ', romaji: 'zu' },
+            { katakana: 'ゼ', romaji: 'ze' },
+            { katakana: 'ゾ', romaji: 'zo' },
+            { katakana: 'ダ', romaji: 'da' },
+            { katakana: 'ヂ', romaji: 'ji' },
+            { katakana: 'ヅ', romaji: 'zu' },
+            { katakana: 'デ', romaji: 'de' },
+            { katakana: 'ド', romaji: 'do' },
+            { katakana: 'バ', romaji: 'ba' },
+            { katakana: 'ビ', romaji: 'bi' },
+            { katakana: 'ブ', romaji: 'bu' },
+            { katakana: 'ベ', romaji: 'be' },
+            { katakana: 'ボ', romaji: 'bo' },
+            { katakana: 'パ', romaji: 'pa' },
+            { katakana: 'ピ', romaji: 'pi' },
+            { katakana: 'プ', romaji: 'pu' },
+            { katakana: 'ペ', romaji: 'pe' },
+            { katakana: 'ポ', romaji: 'po' },
+        ];
+
+        let currentMode;
+        let currentIndex = 0;
+        let practiceSet = [];
+
+        function startGame(mode) {
+            currentMode = mode;
+            if (mode === 'hiragana') {
+                practiceSet = shuffleArray([...hiraganaData]);
+            } else if (mode === 'romaji') {
+                practiceSet = shuffleArray([...hiraganaData]);
+            } else if (mode === 'katakana') {
+                practiceSet = shuffleArray([...katakanaData]);
+            } else if (mode === 'romaji-katakana') {
+                practiceSet = shuffleArray([...katakanaData]);
+            } else if (mode === 'hiragana-extended') {
+                practiceSet = shuffleArray([...hiraganaDataExtended]);
+            } else if (mode === 'romaji-hiragana-extended') {
+                practiceSet = shuffleArray([...hiraganaDataExtended]);
+            } else if (mode === 'katakana-extended') {
+                practiceSet = shuffleArray([...katakanaDataExtended]);
+            } else if (mode === 'romaji-katakana-extended') {
+                practiceSet = shuffleArray([...katakanaDataExtended]);
+            }
+            currentIndex = 0;
+
+            document.querySelector('.mode-select').style.display = 'none';
+            document.querySelector('.game-screen').style.display = 'block';
+            document.querySelector('.input-field').value = '';
+
+            showNextCharacter();
+            updateStats();
+        }
+
+        function shuffleArray(array) {
+            return array.sort(() => Math.random() - 0.5);
+        }
+
+        function showNextCharacter() {
+            const display = document.querySelector('.character-display');
+            if (currentMode === 'hiragana') {
+                display.textContent = practiceSet[currentIndex].hiragana;
+            } else if (currentMode === 'romaji') {
+                display.textContent = practiceSet[currentIndex].romaji;
+            } else if (currentMode === 'katakana') {
+                display.textContent = practiceSet[currentIndex].katakana;
+            } else if (currentMode === 'romaji-katakana') {
+                display.textContent = practiceSet[currentIndex].romaji;
+            } else if (currentMode === 'hiragana-extended') {
+                display.textContent = practiceSet[currentIndex].hiragana;
+            } else if (currentMode === 'romaji-hiragana-extended') {
+                display.textContent = practiceSet[currentIndex].romaji;
+            } else if (currentMode === 'katakana-extended') {
+                display.textContent = practiceSet[currentIndex].katakana;
+            } else if (currentMode === 'romaji-katakana-extended') {
+                display.textContent = practiceSet[currentIndex].romaji;
+            }
+        }
+
+        function checkAnswer(input) {
+            let correctAnswer;
+            if (currentMode === 'hiragana') {
+                correctAnswer = practiceSet[currentIndex].romaji;
+            } else if (currentMode === 'romaji') {
+                correctAnswer = practiceSet[currentIndex].hiragana;
+            } else if (currentMode === 'katakana') {
+                correctAnswer = practiceSet[currentIndex].romaji;
+            } else if (currentMode === 'romaji-katakana') {
+                correctAnswer = practiceSet[currentIndex].katakana;
+            } else if (currentMode === 'hiragana-extended') {
+                correctAnswer = practiceSet[currentIndex].romaji;
+            } else if (currentMode === 'romaji-hiragana-extended') {
+                correctAnswer = practiceSet[currentIndex].hiragana;
+            } else if (currentMode === 'katakana-extended') {
+                correctAnswer = practiceSet[currentIndex].romaji;
+            } else if (currentMode === 'romaji-katakana-extended') {
+                correctAnswer = practiceSet[currentIndex].katakana;
+            }
+
+            if (input.trim().toLowerCase() === correctAnswer.toLowerCase()) {
+                document.querySelector('.character-display').classList.add('correct');
+                setTimeout(() => {
+                    document.querySelector('.character-display').classList.remove('correct');
+                    currentIndex++;
+                    if (currentIndex >= practiceSet.length) {
+                        if (currentMode === 'hiragana' || currentMode === 'romaji') {
+                            practiceSet = shuffleArray([...hiraganaData]);
+                        } else if (currentMode === 'katakana' || currentMode === 'romaji-katakana') {
+                            practiceSet = shuffleArray([...katakanaData]);
+                        } else if (currentMode === 'hiragana-extended' || currentMode === 'romaji-hiragana-extended') {
+                            practiceSet = shuffleArray([...hiraganaDataExtended]);
+                        } else if (currentMode === 'katakana-extended' || currentMode === 'romaji-katakana-extended') {
+                            practiceSet = shuffleArray([...katakanaDataExtended]);
+                        }
+                        currentIndex = 0;
+                    }
+                    showNextCharacter();
+                    document.querySelector('.input-field').value = '';
+                    updateStats();
+                }, 450);
+                return true;
+            }
+            return false;
+        }
+
+        function updateStats() {
+            document.getElementById('remaining').textContent =
+                practiceSet.length - currentIndex;
+        }
+
+        function returnToMenu() {
+            document.querySelector('.mode-select').style.display = 'block';
+            document.querySelector('.game-screen').style.display = 'none';
+        }
+
+        // Event listeners
+        document.querySelector('.input-field').addEventListener('input', (e) => {
+            checkAnswer(e.target.value);
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const storedMode = localStorage.getItem('darkMode') === 'true';
+            if (storedMode) {
+                document.body.classList.add('dark-mode');
+            }
+            document.querySelector('.dark-mode-toggle').textContent = storedMode ? '🌙' : '☀️';
+        });
+
+        document.querySelector('.dark-mode-toggle').addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            document.querySelector('.dark-mode-toggle').textContent = isDarkMode ? '🌙' : '☀️';
+            localStorage.setItem('darkMode', isDarkMode);
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const darkModeToggle = document.querySelector('.dark-mode-toggle');
+            const isDarkMode = localStorage.getItem('darkMode') === 'enabled';
+
+            if (isDarkMode) {
+                document.body.classList.add('dark-mode');
+                darkModeToggle.textContent = '🌙';
+            } else {
+                darkModeToggle.textContent = '☀️';
+            }
+
+            darkModeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                const isDarkMode = document.body.classList.contains('dark-mode');
+                darkModeToggle.textContent = isDarkMode ? '🌙' : '☀️';
+                localStorage.setItem('darkMode', isDarkMode ? 'enabled' : 'disabled');
+            });
+        });
+    </script>
+
+</body>
+
+</html>
