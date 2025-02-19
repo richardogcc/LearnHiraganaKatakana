@@ -488,6 +488,12 @@
         document.querySelector('.input-field').addEventListener('input', (e) => {
             checkAnswer(e.target.value);
         });
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
 
         document.addEventListener('DOMContentLoaded', () => {
             const darkModeToggle = document.querySelector('.dark-mode-toggle');
