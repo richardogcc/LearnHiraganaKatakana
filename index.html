@@ -18,21 +18,6 @@
             transition: background-color 0.5s ease;
         }
 
-        .music-toggle {
-            position: absolute;
-            top: 20px;
-            right: 60px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 24px;
-            color: #555;
-        }
-
-        body.dark-mode .music-toggle {
-            color: #ffc107;
-        }
-
         .container {
             text-align: center;
         }
@@ -172,8 +157,6 @@
 
 <body>
     <button class="dark-mode-toggle">☀️</button>
-    <button class="music-toggle">🔇</button>
-    <audio id="backgroundMusic" src="in-the-place-far-away-japanese-koto-inspirational-calm-music-151182.mp3" loop></audio>
     <div class="container">
         <div class="mode-select">
             <h2>Hiragana</h2>
@@ -505,7 +488,7 @@
         document.querySelector('.input-field').addEventListener('input', (e) => {
             checkAnswer(e.target.value);
         });
-
+        
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closeModal();
@@ -514,12 +497,7 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             const darkModeToggle = document.querySelector('.dark-mode-toggle');
-            const musicToggle = document.querySelector('.music-toggle');
-            const backgroundMusic = document.getElementById('backgroundMusic');
             const isDarkMode = localStorage.getItem('darkMode') === 'enabled';
-
-            // Establecer el volumen inicial bajo
-            backgroundMusic.volume = 0.1;
 
             if (isDarkMode) {
                 document.body.classList.add('dark-mode');
@@ -534,27 +512,6 @@
                 darkModeToggle.textContent = isDarkMode ? '🌙' : '☀️';
                 localStorage.setItem('darkMode', isDarkMode ? 'enabled' : 'disabled');
             });
-
-            let isMusicPlaying = false;
-
-            musicToggle.addEventListener('click', () => {
-                if (isMusicPlaying) {
-                    backgroundMusic.pause();
-                    musicToggle.textContent = '🔇';
-                } else {
-                    backgroundMusic.play();
-                    musicToggle.textContent = '🔊';
-                }
-                isMusicPlaying = !isMusicPlaying;
-            });
-
-            document.addEventListener('click', () => {
-                if (!isMusicPlaying) {
-                    backgroundMusic.play();
-                    musicToggle.textContent = '🔊';
-                    isMusicPlaying = true;
-                }
-            }, { once: true });
         });
     </script>
 
