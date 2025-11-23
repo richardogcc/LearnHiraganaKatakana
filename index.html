@@ -36,6 +36,14 @@
         .app-shell {
             width: 100%;
             max-width: 900px;
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            flex-flow: wrap;
+            align-items: center;
+            align-content: center;
+            justify-content: center;
+            gap: 2.5rem;
         }
 
         .app-header {
@@ -323,7 +331,6 @@
             height: 100%;
             overflow: auto;
             background-color: rgba(0, 0, 0, 0.6);
-            /* Fondo claro */
             align-items: center;
             justify-content: center;
         }
@@ -331,22 +338,87 @@
         .modal-content {
             background: #f9f9f9;
             margin: auto;
-            padding: 16px 16px 12px;
-            max-width: 80%;
+            padding: 18px 22px 20px;
+            width: min(1040px, 96vw);
+            max-height: 92vh;
             position: relative;
-            border-radius: 5px;
-            text-align: center;
+            border-radius: 8px;
+            text-align: left;
+            overflow: auto;
         }
 
         .close-button {
-            position: absolute;
-            right: 6px;
-            top: -4px;
+            position: sticky;
+            float: right;
+            top: 0;
             font-size: 2rem;
             background: none;
             border: none;
             cursor: pointer;
             color: #555;
+            z-index: 10;
+        }
+
+        .kana-table-title {
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .kana-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            background: #ffffff;
+        }
+
+        .kana-table th,
+        .kana-table td {
+            border: 1px solid #ddd;
+            padding: 6px 8px;
+            text-align: center;
+        }
+
+        .kana-table th {
+            background: #f0f0f5;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        .kana-char {
+            font-size: 1.6rem;
+        }
+
+        .kana-section-separator {
+            margin-top: 1.75rem;
+            margin-bottom: 0.4rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-align: center;
+            color: #555;
+        }
+
+        body.dark-mode .modal-content {
+            background: #202030;
+            color: var(--fg);
+        }
+
+        body.dark-mode .kana-table {
+            background: #181820;
+        }
+
+        body.dark-mode .kana-table th,
+        body.dark-mode .kana-table td {
+            border-color: #3a3a50;
+        }
+
+        body.dark-mode .kana-table th {
+            background: #2a2a3c;
+        }
+
+        body.dark-mode .kana-section-separator {
+            color: #ccc;
         }
 
         @media (max-width: 600px) {
@@ -400,7 +472,8 @@
                         <button type="button" onclick="startGame('hiragana')">あ → a</button>
                         <button type="button" class="mode-button-alt" onclick="startGame('romaji')">a → あ</button>
                         <button type="button" onclick="startGame('hiragana-extended')">だ → da</button>
-                        <button type="button" class="mode-button-alt" onclick="startGame('romaji-hiragana-extended')">da → だ</button>
+                        <button type="button" class="mode-button-alt" onclick="startGame('romaji-hiragana-extended')">da
+                            → だ</button>
                     </div>
                 </section>
 
@@ -412,9 +485,11 @@
                     </div>
                     <div>
                         <button type="button" onclick="startGame('katakana')">ア → a</button>
-                        <button type="button" class="mode-button-alt" onclick="startGame('romaji-katakana')">a → ア</button>
+                        <button type="button" class="mode-button-alt" onclick="startGame('romaji-katakana')">a →
+                            ア</button>
                         <button type="button" onclick="startGame('katakana-extended')">ダ → da</button>
-                        <button type="button" class="mode-button-alt" onclick="startGame('romaji-katakana-extended')">da → ダ</button>
+                        <button type="button" class="mode-button-alt" onclick="startGame('romaji-katakana-extended')">da
+                            → ダ</button>
                     </div>
                 </section>
             </div>
@@ -439,10 +514,314 @@
         </div>
     </div>
 
-    <div id="imageModal" class="modal">
+    <div id="kanaModal" class="modal" aria-modal="true" role="dialog" aria-label="Kana reference tables">
         <div class="modal-content">
-            <button class="close-button" onclick="closeModal()">&times;</button>
-            <img id="modalImage" alt="" style="max-width: 100%;">
+            <button class="close-button" type="button" onclick="closeModal()">&times;</button>
+            <h3 class="kana-table-title" id="hiraganaTableTitle">Hiragana chart</h3>
+            <div id="hiraganaBasicSection" class="kana-section-separator">Basic set</div>
+            <table class="kana-table" id="hiraganaTable" aria-labelledby="hiraganaTableTitle">
+                <thead>
+                    <tr>
+                        <th>Row</th>
+                        <th>a</th>
+                        <th>i</th>
+                        <th>u</th>
+                        <th>e</th>
+                        <th>o</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Vowels</td>
+                        <td class="kana-char">あ<br><small>a</small></td>
+                        <td class="kana-char">い<br><small>i</small></td>
+                        <td class="kana-char">う<br><small>u</small></td>
+                        <td class="kana-char">え<br><small>e</small></td>
+                        <td class="kana-char">お<br><small>o</small></td>
+                    </tr>
+                    <tr>
+                        <td>K</td>
+                        <td class="kana-char">か<br><small>ka</small></td>
+                        <td class="kana-char">き<br><small>ki</small></td>
+                        <td class="kana-char">く<br><small>ku</small></td>
+                        <td class="kana-char">け<br><small>ke</small></td>
+                        <td class="kana-char">こ<br><small>ko</small></td>
+                    </tr>
+                    <tr>
+                        <td>S</td>
+                        <td class="kana-char">さ<br><small>sa</small></td>
+                        <td class="kana-char">し<br><small>shi</small></td>
+                        <td class="kana-char">す<br><small>su</small></td>
+                        <td class="kana-char">せ<br><small>se</small></td>
+                        <td class="kana-char">そ<br><small>so</small></td>
+                    </tr>
+                    <tr>
+                        <td>T</td>
+                        <td class="kana-char">た<br><small>ta</small></td>
+                        <td class="kana-char">ち<br><small>chi</small></td>
+                        <td class="kana-char">つ<br><small>tsu</small></td>
+                        <td class="kana-char">て<br><small>te</small></td>
+                        <td class="kana-char">と<br><small>to</small></td>
+                    </tr>
+                    <tr>
+                        <td>N</td>
+                        <td class="kana-char">な<br><small>na</small></td>
+                        <td class="kana-char">に<br><small>ni</small></td>
+                        <td class="kana-char">ぬ<br><small>nu</small></td>
+                        <td class="kana-char">ね<br><small>ne</small></td>
+                        <td class="kana-char">の<br><small>no</small></td>
+                    </tr>
+                    <tr>
+                        <td>H</td>
+                        <td class="kana-char">は<br><small>ha</small></td>
+                        <td class="kana-char">ひ<br><small>hi</small></td>
+                        <td class="kana-char">ふ<br><small>fu</small></td>
+                        <td class="kana-char">へ<br><small>he</small></td>
+                        <td class="kana-char">ほ<br><small>ho</small></td>
+                    </tr>
+                    <tr>
+                        <td>M</td>
+                        <td class="kana-char">ま<br><small>ma</small></td>
+                        <td class="kana-char">み<br><small>mi</small></td>
+                        <td class="kana-char">む<br><small>mu</small></td>
+                        <td class="kana-char">め<br><small>me</small></td>
+                        <td class="kana-char">も<br><small>mo</small></td>
+                    </tr>
+                    <tr>
+                        <td>Y</td>
+                        <td class="kana-char">や<br><small>ya</small></td>
+                        <td></td>
+                        <td class="kana-char">ゆ<br><small>yu</small></td>
+                        <td></td>
+                        <td class="kana-char">よ<br><small>yo</small></td>
+                    </tr>
+                    <tr>
+                        <td>R</td>
+                        <td class="kana-char">ら<br><small>ra</small></td>
+                        <td class="kana-char">り<br><small>ri</small></td>
+                        <td class="kana-char">る<br><small>ru</small></td>
+                        <td class="kana-char">れ<br><small>re</small></td>
+                        <td class="kana-char">ろ<br><small>ro</small></td>
+                    </tr>
+                    <tr>
+                        <td>W / N</td>
+                        <td class="kana-char">わ<br><small>wa</small></td>
+                        <td></td>
+                        <td></td>
+                        <td class="kana-char">を<br><small>wo</small></td>
+                        <td class="kana-char">ん<br><small>n</small></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div id="hiraganaExtendedSection" class="kana-section-separator">Dakuten / Handakuten</div>
+            <table class="kana-table" id="hiraganaExtendedTable" aria-label="Hiragana dakuten and handakuten">
+                <thead>
+                    <tr>
+                        <th>Row</th>
+                        <th>a</th>
+                        <th>i</th>
+                        <th>u</th>
+                        <th>e</th>
+                        <th>o</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>G</td>
+                        <td class="kana-char">が<br><small>ga</small></td>
+                        <td class="kana-char">ぎ<br><small>gi</small></td>
+                        <td class="kana-char">ぐ<br><small>gu</small></td>
+                        <td class="kana-char">げ<br><small>ge</small></td>
+                        <td class="kana-char">ご<br><small>go</small></td>
+                    </tr>
+                    <tr>
+                        <td>Z</td>
+                        <td class="kana-char">ざ<br><small>za</small></td>
+                        <td class="kana-char">じ<br><small>ji</small></td>
+                        <td class="kana-char">ず<br><small>zu</small></td>
+                        <td class="kana-char">ぜ<br><small>ze</small></td>
+                        <td class="kana-char">ぞ<br><small>zo</small></td>
+                    </tr>
+                    <tr>
+                        <td>D</td>
+                        <td class="kana-char">だ<br><small>da</small></td>
+                        <td class="kana-char">ぢ<br><small>ji</small></td>
+                        <td class="kana-char">づ<br><small>zu</small></td>
+                        <td class="kana-char">で<br><small>de</small></td>
+                        <td class="kana-char">ど<br><small>do</small></td>
+                    </tr>
+                    <tr>
+                        <td>B</td>
+                        <td class="kana-char">ば<br><small>ba</small></td>
+                        <td class="kana-char">び<br><small>bi</small></td>
+                        <td class="kana-char">ぶ<br><small>bu</small></td>
+                        <td class="kana-char">べ<br><small>be</small></td>
+                        <td class="kana-char">ぼ<br><small>bo</small></td>
+                    </tr>
+                    <tr>
+                        <td>P</td>
+                        <td class="kana-char">ぱ<br><small>pa</small></td>
+                        <td class="kana-char">ぴ<br><small>pi</small></td>
+                        <td class="kana-char">ぷ<br><small>pu</small></td>
+                        <td class="kana-char">ぺ<br><small>pe</small></td>
+                        <td class="kana-char">ぽ<br><small>po</small></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 class="kana-table-title" id="katakanaTableTitle" style="margin-top: 1.5rem;">Katakana chart</h3>
+            <div id="katakanaBasicSection" class="kana-section-separator">Basic set</div>
+            <table class="kana-table" id="katakanaTable" aria-labelledby="katakanaTableTitle">
+                <thead>
+                    <tr>
+                        <th>Row</th>
+                        <th>a</th>
+                        <th>i</th>
+                        <th>u</th>
+                        <th>e</th>
+                        <th>o</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Vowels</td>
+                        <td class="kana-char">ア<br><small>a</small></td>
+                        <td class="kana-char">イ<br><small>i</small></td>
+                        <td class="kana-char">ウ<br><small>u</small></td>
+                        <td class="kana-char">エ<br><small>e</small></td>
+                        <td class="kana-char">オ<br><small>o</small></td>
+                    </tr>
+                    <tr>
+                        <td>K</td>
+                        <td class="kana-char">カ<br><small>ka</small></td>
+                        <td class="kana-char">キ<br><small>ki</small></td>
+                        <td class="kana-char">ク<br><small>ku</small></td>
+                        <td class="kana-char">ケ<br><small>ke</small></td>
+                        <td class="kana-char">コ<br><small>ko</small></td>
+                    </tr>
+                    <tr>
+                        <td>S</td>
+                        <td class="kana-char">サ<br><small>sa</small></td>
+                        <td class="kana-char">シ<br><small>shi</small></td>
+                        <td class="kana-char">ス<br><small>su</small></td>
+                        <td class="kana-char">セ<br><small>se</small></td>
+                        <td class="kana-char">ソ<br><small>so</small></td>
+                    </tr>
+                    <tr>
+                        <td>T</td>
+                        <td class="kana-char">タ<br><small>ta</small></td>
+                        <td class="kana-char">チ<br><small>chi</small></td>
+                        <td class="kana-char">ツ<br><small>tsu</small></td>
+                        <td class="kana-char">テ<br><small>te</small></td>
+                        <td class="kana-char">ト<br><small>to</small></td>
+                    </tr>
+                    <tr>
+                        <td>N</td>
+                        <td class="kana-char">ナ<br><small>na</small></td>
+                        <td class="kana-char">ニ<br><small>ni</small></td>
+                        <td class="kana-char">ヌ<br><small>nu</small></td>
+                        <td class="kana-char">ネ<br><small>ne</small></td>
+                        <td class="kana-char">ノ<br><small>no</small></td>
+                    </tr>
+                    <tr>
+                        <td>H</td>
+                        <td class="kana-char">ハ<br><small>ha</small></td>
+                        <td class="kana-char">ヒ<br><small>hi</small></td>
+                        <td class="kana-char">フ<br><small>fu</small></td>
+                        <td class="kana-char">ヘ<br><small>he</small></td>
+                        <td class="kana-char">ホ<br><small>ho</small></td>
+                    </tr>
+                    <tr>
+                        <td>M</td>
+                        <td class="kana-char">マ<br><small>ma</small></td>
+                        <td class="kana-char">ミ<br><small>mi</small></td>
+                        <td class="kana-char">ム<br><small>mu</small></td>
+                        <td class="kana-char">メ<br><small>me</small></td>
+                        <td class="kana-char">モ<br><small>mo</small></td>
+                    </tr>
+                    <tr>
+                        <td>Y</td>
+                        <td class="kana-char">ヤ<br><small>ya</small></td>
+                        <td></td>
+                        <td class="kana-char">ユ<br><small>yu</small></td>
+                        <td></td>
+                        <td class="kana-char">ヨ<br><small>yo</small></td>
+                    </tr>
+                    <tr>
+                        <td>R</td>
+                        <td class="kana-char">ラ<br><small>ra</small></td>
+                        <td class="kana-char">リ<br><small>ri</small></td>
+                        <td class="kana-char">ル<br><small>ru</small></td>
+                        <td class="kana-char">レ<br><small>re</small></td>
+                        <td class="kana-char">ロ<br><small>ro</small></td>
+                    </tr>
+                    <tr>
+                        <td>W / N</td>
+                        <td class="kana-char">ワ<br><small>wa</small></td>
+                        <td></td>
+                        <td></td>
+                        <td class="kana-char">ヲ<br><small>wo</small></td>
+                        <td class="kana-char">ン<br><small>n</small></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div id="katakanaExtendedSection" class="kana-section-separator">Dakuten / Handakuten</div>
+            <table class="kana-table" id="katakanaExtendedTable" aria-label="Katakana dakuten and handakuten">
+                <thead>
+                    <tr>
+                        <th>Row</th>
+                        <th>a</th>
+                        <th>i</th>
+                        <th>u</th>
+                        <th>e</th>
+                        <th>o</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>G</td>
+                        <td class="kana-char">ガ<br><small>ga</small></td>
+                        <td class="kana-char">ギ<br><small>gi</small></td>
+                        <td class="kana-char">グ<br><small>gu</small></td>
+                        <td class="kana-char">ゲ<br><small>ge</small></td>
+                        <td class="kana-char">ゴ<br><small>go</small></td>
+                    </tr>
+                    <tr>
+                        <td>Z</td>
+                        <td class="kana-char">ザ<br><small>za</small></td>
+                        <td class="kana-char">ジ<br><small>ji</small></td>
+                        <td class="kana-char">ズ<br><small>zu</small></td>
+                        <td class="kana-char">ゼ<br><small>ze</small></td>
+                        <td class="kana-char">ゾ<br><small>zo</small></td>
+                    </tr>
+                    <tr>
+                        <td>D</td>
+                        <td class="kana-char">ダ<br><small>da</small></td>
+                        <td class="kana-char">ヂ<br><small>ji</small></td>
+                        <td class="kana-char">ヅ<br><small>zu</small></td>
+                        <td class="kana-char">デ<br><small>de</small></td>
+                        <td class="kana-char">ド<br><small>do</small></td>
+                    </tr>
+                    <tr>
+                        <td>B</td>
+                        <td class="kana-char">バ<br><small>ba</small></td>
+                        <td class="kana-char">ビ<br><small>bi</small></td>
+                        <td class="kana-char">ブ<br><small>bu</small></td>
+                        <td class="kana-char">ベ<br><small>be</small></td>
+                        <td class="kana-char">ボ<br><small>bo</small></td>
+                    </tr>
+                    <tr>
+                        <td>P</td>
+                        <td class="kana-char">パ<br><small>pa</small></td>
+                        <td class="kana-char">ピ<br><small>pi</small></td>
+                        <td class="kana-char">プ<br><small>pu</small></td>
+                        <td class="kana-char">ペ<br><small>pe</small></td>
+                        <td class="kana-char">ポ<br><small>po</small></td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -778,23 +1157,45 @@
         }
 
         function showHiragana() {
-            openModal('hiragana.svg', 'Hiragana chart');
+            openModal('hiragana');
         }
 
         function showKatakana() {
-            openModal('katakana.svg', 'Katakana chart');
+            openModal('katakana');
         }
 
-        function openModal(src, altText) {
-            const modal = document.getElementById('imageModal');
-            const img = document.getElementById('modalImage');
-            img.src = src;
-            img.alt = altText;
+        function openModal(type) {
+            const modal = document.getElementById('kanaModal');
+            const hiraTable = document.getElementById('hiraganaTable');
+            const hiraTitle = document.getElementById('hiraganaTableTitle');
+            const hiraBasic = document.getElementById('hiraganaBasicSection');
+            const hiraExtended = document.getElementById('hiraganaExtendedSection');
+            const hiraExtendedTable = document.getElementById('hiraganaExtendedTable');
+            const kataTable = document.getElementById('katakanaTable');
+            const kataTitle = document.getElementById('katakanaTableTitle');
+            const kataBasic = document.getElementById('katakanaBasicSection');
+            const kataExtended = document.getElementById('katakanaExtendedSection');
+            const kataExtendedTable = document.getElementById('katakanaExtendedTable');
+
+            const showHira = type === 'hiragana';
+
+            if (hiraTitle) hiraTitle.style.display = showHira ? 'block' : 'none';
+            if (hiraBasic) hiraBasic.style.display = showHira ? 'block' : 'none';
+            if (hiraTable) hiraTable.style.display = showHira ? 'table' : 'none';
+            if (hiraExtended) hiraExtended.style.display = showHira ? 'block' : 'none';
+            if (hiraExtendedTable) hiraExtendedTable.style.display = showHira ? 'table' : 'none';
+
+            if (kataTitle) kataTitle.style.display = showHira ? 'none' : 'block';
+            if (kataBasic) kataBasic.style.display = showHira ? 'none' : 'block';
+            if (kataTable) kataTable.style.display = showHira ? 'none' : 'table';
+            if (kataExtended) kataExtended.style.display = showHira ? 'none' : 'block';
+            if (kataExtendedTable) kataExtendedTable.style.display = showHira ? 'none' : 'table';
+
             modal.style.display = 'flex';
         }
 
         function closeModal() {
-            document.getElementById('imageModal').style.display = 'none';
+            document.getElementById('kanaModal').style.display = 'none';
         }
 
         // Event listeners
@@ -815,7 +1216,7 @@
                 display.classList.remove('showing-help');
             }
         });
-        
+
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closeModal();
