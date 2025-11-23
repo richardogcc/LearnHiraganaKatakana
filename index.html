@@ -1,70 +1,185 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="icons8-japan-16.png" type="image/x-icon">
-    <title>Hiragana & Katakana</title>
+    <title>Learn Hiragana and Katakana</title>
     <style>
+        :root {
+            --bg: #f4f4f7;
+            --fg: #222;
+            --accent: #e91e63;
+            --accent-soft: #fce4ec;
+            --card-bg: #ffffff;
+            --border-subtle: #ddd;
+            --button-bg: #1976d2;
+            --button-bg-alt: #455a64;
+            --button-text: #ffffff;
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: flex-start;
             min-height: 100vh;
             margin: 0;
-            padding: 20px;
-            transition: background-color 0.5s ease;
+            padding: 32px 16px 24px;
+            background: radial-gradient(circle at top, #ffebee 0, #f4f4f7 45%, #e3f2fd 100%);
+            color: var(--fg);
+            transition: background-color 0.5s ease, color 0.5s ease, background 0.5s ease;
+        }
+
+        .app-shell {
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .app-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .title-block h1 {
+            margin: 0 0 4px;
+            font-size: 1.75rem;
+            letter-spacing: 0.03em;
+        }
+
+        .title-block p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #666;
         }
 
         .container {
             text-align: center;
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 24px 18px 20px;
+            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--border-subtle);
         }
 
         .mode-select {
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 16px 20px;
+            align-items: flex-start;
+        }
+
+        .mode-column {
+            border-radius: 12px;
+            padding: 12px 12px 10px;
+            background: #fafafa;
+        }
+
+        .mode-column h2 {
+            margin-top: 0;
+            margin-bottom: 8px;
+        }
+
+        .mode-description {
+            font-size: 0.85rem;
+            color: #777;
+            margin-bottom: 8px;
         }
 
         button {
-            padding: 15px 30px;
-            margin: 10px;
-            font-size: 1.2rem;
+            padding: 10px 18px;
+            margin: 6px 4px;
+            font-size: 0.95rem;
             cursor: pointer;
-            background-color: #4CAF50;
-            color: white;
+            background-color: var(--button-bg);
+            color: var(--button-text);
             border: none;
-            border-radius: 5px;
-            transition: transform 0.2s;
+            border-radius: 999px;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            white-space: nowrap;
+        }
+
+        .mode-button-alt {
+            background-color: var(--button-bg-alt);
+        }
+
+        .cheat-sheet-hiragana button,
+        .cheat-sheet-katakana button {
+            background: var(--accent-soft);
+            color: #ad1457;
+            box-shadow: none;
+            font-size: 0.85rem;
+            padding: 6px 14px;
         }
 
         button:hover {
-            transform: scale(1.05);
+            transform: translateY(-1px) scale(1.02);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
+        }
+
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
         .character-display {
-            font-size: 8rem;
-            margin: 2rem 0;
+            font-size: clamp(4rem, 11vw, 7rem);
+            margin: 1.75rem 0 1.25rem;
             min-height: 120px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .character-display::after {
+            content: "Click for hint";
+            position: absolute;
+            bottom: -1.1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            color: #aaa;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            pointer-events: none;
+        }
+
+        .character-display:hover::after {
+            opacity: 1;
+        }
+
+        .input-hint {
+            font-size: 0.8rem;
+            color: #888;
+            margin-bottom: 0.35rem;
         }
 
         .input-field {
             padding: 15px;
             font-size: 1.5rem;
-            width: 200px;
+            width: min(230px, 80vw);
             text-align: center;
             border: 2px solid #ccc;
-            border-radius: 5px;
-            margin-bottom: 1rem;
+            border-radius: 999px;
+            margin-bottom: 0.5rem;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
         }
 
         .input-field:focus {
             outline: none;
-            border-color: #4CAF50;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.16);
+            background-color: #fff;
         }
 
         .character-display.correct {
-            color: #4CAF50 !important;
+            color: #43a047 !important;
         }
 
         .game-screen {
@@ -72,49 +187,130 @@
         }
 
         .stats {
-            font-size: 1.2rem;
+            font-size: 0.95rem;
             color: #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 6px;
+        }
+
+        .stats-pill {
+            padding: 2px 10px;
+            border-radius: 999px;
+            background: #f1f8e9;
+            font-weight: 600;
+            color: #558b2f;
+        }
+
+        .session-stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 10px;
+            font-size: 0.8rem;
+            color: #555;
+        }
+
+        .session-chip {
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: #e3f2fd;
+            color: #1565c0;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        #elapsedTime {
+            display: inline-block;
+            min-width: 3.2em;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .helper-text {
+            margin-top: 12px;
+            font-size: 0.8rem;
+            color: #888;
         }
 
         /* Dark Mode Styles */
         body.dark-mode {
-            background-color: #333;
-            color: #fff;
+            --bg: #101018;
+            --fg: #f5f5f5;
+            --accent: #ffb74d;
+            --accent-soft: rgba(255, 183, 77, 0.12);
+            --card-bg: #181820;
+            --border-subtle: #303040;
+            --button-bg: #3949ab;
+            --button-bg-alt: #00897b;
+            --button-text: #ffffff;
+
+            background: radial-gradient(circle at top, #212121 0, #101018 55%, #000000 100%);
+            color: var(--fg);
         }
 
-        body.dark-mode .stats {
-            color: #ccc;
+        body.dark-mode .container {
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+        }
+
+        body.dark-mode .mode-column {
+            background: #202030;
+        }
+
+        body.dark-mode .title-block p,
+        body.dark-mode .stats,
+        body.dark-mode .helper-text {
+            color: #bbb;
         }
 
         body.dark-mode .input-field {
-            background-color: #444;
-            color: #fff;
-            border-color: #555;
+            background-color: #181820;
+            color: var(--fg);
+            border-color: #42425a;
         }
 
         body.dark-mode .input-field:focus {
-            border-color: #777;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(255, 183, 77, 0.2);
         }
 
         body.dark-mode .character-display.correct {
-            color: #98ee98 !important;
-            /* Eliminar background-color */
+            color: #b2ff59 !important;
+        }
+
+        body.dark-mode .stats-pill {
+            background: rgba(129, 199, 132, 0.18);
+            color: #c5e1a5;
         }
 
         /* Dark Mode Toggle Button */
         .dark-mode-toggle {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: none;
-            border: none;
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(0, 0, 0, 0.08);
             cursor: pointer;
-            font-size: 24px;
+            font-size: 20px;
             color: #555;
+            border-radius: 999px;
+            padding: 6px 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(8px);
+        }
+
+        .dark-mode-toggle span {
+            font-size: 0.8rem;
         }
 
         body.dark-mode .dark-mode-toggle {
+            background: rgba(24, 24, 32, 0.9);
             color: #ffc107;
+            border-color: rgba(255, 255, 255, 0.12);
         }
 
         .modal {
@@ -126,7 +322,7 @@
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgba(255, 255, 255, 0.9);
+            background-color: rgba(0, 0, 0, 0.6);
             /* Fondo claro */
             align-items: center;
             justify-content: center;
@@ -135,7 +331,7 @@
         .modal-content {
             background: #f9f9f9;
             margin: auto;
-            padding: 20px;
+            padding: 16px 16px 12px;
             max-width: 80%;
             position: relative;
             border-radius: 5px;
@@ -144,47 +340,102 @@
 
         .close-button {
             position: absolute;
-            right: 0;
-            top: 0;
-            font-size: 3rem;
+            right: 6px;
+            top: -4px;
+            font-size: 2rem;
             background: none;
             border: none;
             cursor: pointer;
             color: #555;
         }
+
+        @media (max-width: 600px) {
+            .app-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .container {
+                padding-inline: 14px;
+            }
+
+            .mode-column {
+                padding-inline: 10px;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            .cheat-sheet-hiragana button,
+            .cheat-sheet-katakana button {
+                width: auto;
+            }
+        }
     </style>
 </head>
 
 <body>
-    <button class="dark-mode-toggle">☀️</button>
-    <div class="container">
-        <div class="mode-select">
-            <h2>Hiragana</h2>
-            <div class="cheat-sheet-hiragana">
-                <button onclick="showHiragana()">Show Hiragana</button>
+    <div class="app-shell" aria-label="Hiragana and Katakana trainer">
+        <header class="app-header">
+            <div class="title-block">
+                <h1>Hiragana & Katakana Trainer</h1>
+                <p>Practice kana and romaji reading in both directions.</p>
             </div>
-            <button onclick="startGame('hiragana')">あ - a</button>
-            <button onclick="startGame('romaji')">a - あ</button>
-            <button onclick="startGame('hiragana-extended')">だ - da</button>
-            <button onclick="startGame('romaji-hiragana-extended')">da - だ</button>
+            <button class="dark-mode-toggle" type="button" aria-label="Toggle theme">
+                <span class="dark-mode-icon">☀️</span>
+                <span>Theme</span>
+            </button>
+        </header>
 
-            <h2>Katakana</h2>
-            <div class="cheat-sheet-katakana">
-                <button onclick="showKatakana()">Show Katakana</button>
-            </div>
-            <button onclick="startGame('katakana')">ア - a</button>
-            <button onclick="startGame('romaji-katakana')">a - ア</button>
-            <button onclick="startGame('katakana-extended')">ダ - da</button>
-            <button onclick="startGame('romaji-katakana-extended')">da - ダ</button>
-        </div>
+        <div class="container">
+            <div class="mode-select" aria-label="Select practice type">
+                <section class="mode-column" aria-label="Hiragana modes">
+                    <h2>Hiragana</h2>
+                    <p class="mode-description">Basic syllables and dakuten/handakuten.</p>
+                    <div class="cheat-sheet-hiragana">
+                        <button type="button" onclick="showHiragana()">Show hiragana chart</button>
+                    </div>
+                    <div>
+                        <button type="button" onclick="startGame('hiragana')">あ → a</button>
+                        <button type="button" class="mode-button-alt" onclick="startGame('romaji')">a → あ</button>
+                        <button type="button" onclick="startGame('hiragana-extended')">だ → da</button>
+                        <button type="button" class="mode-button-alt" onclick="startGame('romaji-hiragana-extended')">da → だ</button>
+                    </div>
+                </section>
 
-        <div class="game-screen">
-            <div class="character-display"></div>
-            <input type="text" class="input-field" autofocus>
-            <div class="stats">
-                <span id="remaining">0</span> left
+                <section class="mode-column" aria-label="Katakana modes">
+                    <h2>Katakana</h2>
+                    <p class="mode-description">Basic syllables and dakuten/handakuten.</p>
+                    <div class="cheat-sheet-katakana">
+                        <button type="button" onclick="showKatakana()">Show katakana chart</button>
+                    </div>
+                    <div>
+                        <button type="button" onclick="startGame('katakana')">ア → a</button>
+                        <button type="button" class="mode-button-alt" onclick="startGame('romaji-katakana')">a → ア</button>
+                        <button type="button" onclick="startGame('katakana-extended')">ダ → da</button>
+                        <button type="button" class="mode-button-alt" onclick="startGame('romaji-katakana-extended')">da → ダ</button>
+                    </div>
+                </section>
             </div>
-            <button style="margin-top: 4rem;" onclick="returnToMenu()">Menu</button>
+
+            <div class="game-screen" aria-live="polite">
+                <div class="character-display" aria-label="Character to answer"></div>
+                <div class="input-hint">Type the correct answer to move to the next character.</div>
+                <input type="text" class="input-field" autocomplete="off" spellcheck="false" inputmode="text">
+                <div class="stats">
+                    <span>Remaining</span>
+                    <span class="stats-pill" id="remaining">0</span>
+                    <span>characters in this round.</span>
+                </div>
+                <div class="session-stats">
+                    <span class="session-chip">🔥 Current streak: <span id="currentStreak">0</span></span>
+                    <span class="session-chip">🏆 Best streak: <span id="bestStreak">0</span></span>
+                    <span class="session-chip">⏱️ Time: <span id="elapsedTime">0:00</span></span>
+                </div>
+                <div class="helper-text">Press "Menu" at any time to change mode.</div>
+                <button style="margin-top: 2rem;" type="button" onclick="returnToMenu()">Menu</button>
+            </div>
         </div>
     </div>
 
@@ -353,6 +604,14 @@
         let currentMode;
         let currentIndex = 0;
         let practiceSet = [];
+        let currentStreak = 0;
+        let bestStreak = 0;
+        let startTime = null;
+        let timerInterval = null;
+
+        // Guarda el display original de mode-select para restaurarlo al volver al menú
+        const modeSelectElement = document.querySelector('.mode-select');
+        const originalModeSelectDisplay = modeSelectElement ? getComputedStyle(modeSelectElement).display : 'grid';
 
         function startGame(mode) {
             currentMode = mode;
@@ -375,9 +634,22 @@
             }
             currentIndex = 0;
 
-            document.querySelector('.mode-select').style.display = 'none';
+            if (modeSelectElement) modeSelectElement.style.display = 'none';
             document.querySelector('.game-screen').style.display = 'block';
-            document.querySelector('.input-field').value = '';
+            const input = document.querySelector('.input-field');
+            input.value = '';
+            input.focus();
+
+            currentStreak = 0;
+            if (!bestStreak) bestStreak = 0;
+            startTime = Date.now();
+            updateStreakUI();
+            updateTimeUI(0);
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                const seconds = Math.floor((Date.now() - startTime) / 1000);
+                updateTimeUI(seconds);
+            }, 1000);
 
             showNextCharacter();
             updateStats();
@@ -389,22 +661,32 @@
 
         function showNextCharacter() {
             const display = document.querySelector('.character-display');
+            display.dataset.answer = '';
+            display.classList.remove('showing-help');
             if (currentMode === 'hiragana') {
                 display.textContent = practiceSet[currentIndex].hiragana;
+                display.dataset.answer = practiceSet[currentIndex].romaji;
             } else if (currentMode === 'romaji') {
                 display.textContent = practiceSet[currentIndex].romaji;
+                display.dataset.answer = practiceSet[currentIndex].hiragana;
             } else if (currentMode === 'katakana') {
                 display.textContent = practiceSet[currentIndex].katakana;
+                display.dataset.answer = practiceSet[currentIndex].romaji;
             } else if (currentMode === 'romaji-katakana') {
                 display.textContent = practiceSet[currentIndex].romaji;
+                display.dataset.answer = practiceSet[currentIndex].katakana;
             } else if (currentMode === 'hiragana-extended') {
                 display.textContent = practiceSet[currentIndex].hiragana;
+                display.dataset.answer = practiceSet[currentIndex].romaji;
             } else if (currentMode === 'romaji-hiragana-extended') {
                 display.textContent = practiceSet[currentIndex].romaji;
+                display.dataset.answer = practiceSet[currentIndex].hiragana;
             } else if (currentMode === 'katakana-extended') {
                 display.textContent = practiceSet[currentIndex].katakana;
+                display.dataset.answer = practiceSet[currentIndex].romaji;
             } else if (currentMode === 'romaji-katakana-extended') {
                 display.textContent = practiceSet[currentIndex].romaji;
+                display.dataset.answer = practiceSet[currentIndex].katakana;
             }
         }
 
@@ -429,6 +711,11 @@
             }
 
             if (input.trim().toLowerCase() === correctAnswer.toLowerCase()) {
+                currentStreak++;
+                if (currentStreak > bestStreak) {
+                    bestStreak = currentStreak;
+                }
+                updateStreakUI();
                 document.querySelector('.character-display').classList.add('correct');
                 setTimeout(() => {
                     document.querySelector('.character-display').classList.remove('correct');
@@ -451,6 +738,10 @@
                 }, 150);
                 return true;
             }
+            else {
+                currentStreak = 0;
+                updateStreakUI();
+            }
             return false;
         }
 
@@ -460,16 +751,38 @@
         }
 
         function returnToMenu() {
-            document.querySelector('.mode-select').style.display = 'block';
+            if (modeSelectElement) modeSelectElement.style.display = originalModeSelectDisplay;
             document.querySelector('.game-screen').style.display = 'none';
+            const input = document.querySelector('.input-field');
+            input.value = '';
+
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+        }
+
+        function updateStreakUI() {
+            const currentEl = document.getElementById('currentStreak');
+            const bestEl = document.getElementById('bestStreak');
+            if (currentEl) currentEl.textContent = currentStreak;
+            if (bestEl) bestEl.textContent = bestStreak;
+        }
+
+        function updateTimeUI(totalSeconds) {
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            const formatted = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            const timeEl = document.getElementById('elapsedTime');
+            if (timeEl) timeEl.textContent = formatted;
         }
 
         function showHiragana() {
-            openModal('hiragana.svg', 'Hiragana Chart');
+            openModal('hiragana.svg', 'Hiragana chart');
         }
 
         function showKatakana() {
-            openModal('katakana.svg', 'Katakana Chart');
+            openModal('katakana.svg', 'Katakana chart');
         }
 
         function openModal(src, altText) {
@@ -488,6 +801,20 @@
         document.querySelector('.input-field').addEventListener('input', (e) => {
             checkAnswer(e.target.value);
         });
+
+        document.querySelector('.character-display').addEventListener('click', () => {
+            const display = document.querySelector('.character-display');
+            if (!display.dataset.answer) return;
+            // Toggle between original character and its hint
+            if (!display.classList.contains('showing-help')) {
+                display.dataset.original = display.textContent;
+                display.textContent = display.dataset.answer;
+                display.classList.add('showing-help');
+            } else {
+                display.textContent = display.dataset.original || display.textContent;
+                display.classList.remove('showing-help');
+            }
+        });
         
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
@@ -497,20 +824,21 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             const darkModeToggle = document.querySelector('.dark-mode-toggle');
+            const darkModeIcon = document.querySelector('.dark-mode-icon');
             const isDarkMode = localStorage.getItem('darkMode') === 'enabled';
 
             if (isDarkMode) {
                 document.body.classList.add('dark-mode');
-                darkModeToggle.textContent = '🌙';
+                if (darkModeIcon) darkModeIcon.textContent = '🌙';
             } else {
-                darkModeToggle.textContent = '☀️';
+                if (darkModeIcon) darkModeIcon.textContent = '☀️';
             }
 
             darkModeToggle.addEventListener('click', () => {
                 document.body.classList.toggle('dark-mode');
-                const isDarkMode = document.body.classList.contains('dark-mode');
-                darkModeToggle.textContent = isDarkMode ? '🌙' : '☀️';
-                localStorage.setItem('darkMode', isDarkMode ? 'enabled' : 'disabled');
+                const isDark = document.body.classList.contains('dark-mode');
+                if (darkModeIcon) darkModeIcon.textContent = isDark ? '🌙' : '☀️';
+                localStorage.setItem('darkMode', isDark ? 'enabled' : 'disabled');
             });
         });
     </script>
